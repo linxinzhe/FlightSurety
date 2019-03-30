@@ -74,11 +74,7 @@ contract FlightSuretyApp {
     * @dev Contract constructor
     *
     */
-    constructor
-                                (
-                                    address dataContract
-                                ) 
-                                public 
+    constructor(address dataContract) public
     {
         contractOwner = msg.sender;
         flightSuretyData = FlightSuretyData(dataContract);
@@ -88,10 +84,7 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function isOperational() 
-                            public 
-                            view
-                            returns(bool) 
+    function isOperational() public view returns(bool)
     {
         return flightSuretyData.isOperational();  // Modify to call data contract's status
     }
@@ -105,12 +98,7 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
-    function registerAirline
-                            (   
-                            )
-                            external
-                            pure
-                            returns(bool success, uint256 votes)
+    function registerAirline() external pure returns(bool success, uint256 votes)
     {
         return (success, 0);
     }
