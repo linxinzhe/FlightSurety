@@ -18,9 +18,9 @@ contract FlightSuretyApp {
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
+    // Airline Register
     uint8 private constant AIRLINE_REGISTER_CONSENSUS_NUM_CONDITION = 4;
     address[] multiCalls = new address[](0);
-    address currentVoteAirline=0x0;
 
     // Flight status codees
     uint8 private constant STATUS_CODE_UNKNOWN = 0;
@@ -95,25 +95,21 @@ contract FlightSuretyApp {
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
-
-
    /**
     * @dev Add an airline to the registration queue
     *
     */
-    function registerAirline(address _airline) external requireContractOwner returns (bool success, uint256 votes)
+    function registerAirline(address _airline) external requireIsOperational returns (bool success, uint256 votes)
     {
-        bool isFunded = flightSuretyData.isAirlineFunded(_airline);
-        require(isFunded == true, "Caller is not a funded airline");
+        bool isRegistered = flightSuretyData.isAirlineRegistered(msg.sender);
+        require(isRegistered, "Caller is not a registered airline");
 
-        require(currentVoteAirline == 0x0 || currentVoteAirline == _airline, "Don't vote the different airline");
+        isRegistered = flightSuretyData.isAirlineRegistered(_airline);
+        require(!isRegistered, "Airline is already a registered airline");
 
         uint number = flightSuretyData.getAirlineNum();
         //check consensus
-        if (number > AIRLINE_REGISTER_CONSENSUS_NUM_CONDITION) {
-            bool isRegistered = flightSuretyData.isAirlineRegistered(_airline);
-            require(isRegistered == true, "Caller is not a registered airline");
-
+        if (number >= AIRLINE_REGISTER_CONSENSUS_NUM_CONDITION) {
             bool isDuplicate = false;
             for (uint c = 0; c < multiCalls.length; c++) {
                 if (multiCalls[c] == msg.sender) {
@@ -124,19 +120,21 @@ contract FlightSuretyApp {
             require(!isDuplicate, "Caller has already called this function.");
 
             multiCalls.push(msg.sender);
-            currentVoteAirline = _airline;
 
-            if (multiCalls.length >= number / 2) {// 50%
+            if (multiCalls.length >= number.div(2)) {// 50%
                 multiCalls = new address[](0);
-                currentVoteAirline = 0x0;
                 flightSuretyData.registerAirline(_airline);
             }
         } else {
             flightSuretyData.registerAirline(_airline);
-            currentVoteAirline = 0x0;
         }
 
         return (success, 0);
+    }
+
+    function fundAirline(address _airline) external payable requireIsOperational
+    {
+        flightSuretyData.fund(msg.value, _airline);
     }
 
 
