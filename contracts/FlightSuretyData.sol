@@ -23,6 +23,24 @@ contract FlightSuretyData {
     address[] private registeredAirlines;
     uint256 public constant REGISTRATION_FEE_AIRLINES = 10 ether;
 
+
+    struct Passenger {   //Passenger Struct
+        bool isInsured;
+        bool[] isPaid;
+        uint256[] insurancePaid;
+        string[] flights;
+    }
+    mapping(address => Passenger) public InsuredPassengers; //Passenger mapping
+
+    //Flight mapping Passenger
+    mapping(string => address[]) private FlightPassengers;
+
+    //Flight to totalInsured Amount mapping e.g. UA047 => 5 ETH
+    mapping(string => uint256) private FlightInsuredAmount;
+
+    //Passenger address to insurance payment. Stores Insurance payouts for passengers
+    mapping(address => uint256) private InsurancePayment;
+
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
@@ -128,11 +146,7 @@ contract FlightSuretyData {
      * @dev Buy insurance for a flight
      *
      */
-    function buy
-    (
-    )
-    external
-    payable
+    function buy()external payable
     {
 
     }
@@ -140,11 +154,7 @@ contract FlightSuretyData {
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees
-    (
-    )
-    external
-    pure
+    function creditInsurees()external pure
     {
     }
 
@@ -153,11 +163,7 @@ contract FlightSuretyData {
      *  @dev Transfers eligible payout funds to insuree
      *
     */
-    function pay
-    (
-    )
-    external
-    pure
+    function pay() external pure
     {
     }
 
@@ -172,15 +178,7 @@ contract FlightSuretyData {
         contractBalance = contractBalance.add(fundAmt);
     }
 
-    function getFlightKey
-    (
-        address airline,
-        string memory flight,
-        uint256 timestamp
-    )
-    pure
-    internal
-    returns (bytes32)
+    function getFlightKey(address airline,string memory flight,uint256 timestamp) pure internal returns (bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
@@ -189,9 +187,7 @@ contract FlightSuretyData {
     * @dev Fallback function for funding smart contract.
     *
     */
-    function()
-    external
-    payable
+    function() external payable
     {
         contractBalance = contractBalance.add(msg.value);
     }
