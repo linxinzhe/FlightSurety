@@ -2,6 +2,7 @@
 
 export default class DOM {
 
+    static option = (...args) => DOM.makeElement(`option`, ...args);
     static a = (...args) => DOM.makeElement(`a`, ...args);
     static button = (...args) => DOM.makeElement(`button`, ...args);
     static div = (...args) => DOM.makeElement(`div`, ...args);

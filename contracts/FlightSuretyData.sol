@@ -112,6 +112,11 @@ contract FlightSuretyData {
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
+    function getContractBalance() external view requireIsOperational returns(uint balance)
+    {
+        return contractBalance;
+    }
+
     function initialFirstAirline(address _airline) internal requireIsOperational{
         airlines[_airline] = Airline({registered : true, fundBalance : 0});
         registeredAirlines.push(_airline);
@@ -138,9 +143,6 @@ contract FlightSuretyData {
     function getAirlineNum() view requireIsOperational returns (uint num){
         return registeredAirlines.length;
     }
-
-
-
 
     /**
      * @dev Buy insurance for a flight

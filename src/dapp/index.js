@@ -15,7 +15,39 @@ import './flightsurety.css';
             console.log(error,result);
             display('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
         });
-    
+
+        async function getBalance() {
+            await contract.getContractBalance((error, result) => {
+                if(error)
+                    console.log(error);
+                else
+                    console.log(`contract balance = ${result}`);
+                displayContractBal('Contract Balance:', result);
+            })
+        }
+
+        getBalance();
+
+        populateSelect("airline", contract.airlines, 1);
+
+        DOM.elid('fund').addEventListener('click', () => {
+            let airline = DOM.elid('airline1').value;
+            let fundAmount = DOM.elid('fundAmount').value;
+            // Write transaction
+            if (fundAmount > 0) {
+                contract.fundAirline(airline, fundAmount, (tx, result) => {
+                    displayFund('Airline funding', [{
+                        label: 'Funding status : ',
+                        TXid: tx,
+                        airline: result,
+                        amount: fundAmount
+                    }]);
+                    getBalance();
+                });
+            } else {
+                alert("Airlines need to pay >0 ETH.");
+            }
+        });
 
         // User-submitted transaction
         DOM.elid('submit-oracle').addEventListener('click', () => {
@@ -31,6 +63,36 @@ import './flightsurety.css';
 
 })();
 
+function populateSelect(type, selectOpts, el){
+    let select = DOM.elid(type + el);
+    selectOpts.forEach(opt => {
+        if((type  === 'airline' && opt.fundBalance === 0) || type === 'flights'){
+            select.appendChild(DOM.option({value: opt.address}, opt.name));
+        }
+    });
+}
+
+function displayContractBal(description, balance) {
+    let displayDiv = DOM.elid("display-contract-balance");
+    displayDiv.innerHTML = "";
+    let section = DOM.section();
+    section.appendChild(DOM.h5(description));
+    section.appendChild(DOM.div({className: 'col-sm-8 field-value'}, balance));
+    displayDiv.append(section);
+}
+
+function displayFund(title, results) {
+    let displayDiv = DOM.elid("display-wrapper-funding-status");
+    let section = DOM.section();
+    section.appendChild(DOM.h5(title));
+    results.map((result) => {
+        let row = section.appendChild(DOM.div({className: 'row'}));
+        row.appendChild(DOM.div({className: 'col-sm-4 field'}, String(result.airline) + " Funded."));
+        row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, result.TXid ? ("TX Id : " + String(result.TXid)) : ("Funded : TX: " + String(result.airline))));
+        section.appendChild(row);
+    });
+    displayDiv.append(section);
+}
 
 function display(title, description, results) {
     let displayDiv = DOM.elid("display-wrapper");
@@ -38,11 +100,11 @@ function display(title, description, results) {
     section.appendChild(DOM.h2(title));
     section.appendChild(DOM.h5(description));
     results.map((result) => {
-        let row = section.appendChild(DOM.div({className:'row'}));
+        let row = section.appendChild(DOM.div({className: 'row'}));
         row.appendChild(DOM.div({className: 'col-sm-4 field'}, result.label));
         row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, result.error ? String(result.error) : String(result.value)));
         section.appendChild(row);
-    })
+    });
     displayDiv.append(section);
 
 }

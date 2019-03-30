@@ -96,6 +96,12 @@ contract FlightSuretyApp {
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
+
+    function getContractBalance() external view requireIsOperational returns(uint balance)
+    {
+        return flightSuretyData.getContractBalance();
+    }
+
    /**
     * @dev Add an airline to the registration queue
     *
@@ -162,7 +168,7 @@ contract FlightSuretyApp {
 
 
     // Generate a request for oracles to fetch flight information
-    function fetchFlightStatus(ddress airline,string flight,uint256 timestamp) external
+    function fetchFlightStatus(address airline,string flight,uint256 timestamp) external
     {
         uint8 index = getRandomIndex(msg.sender);
 
