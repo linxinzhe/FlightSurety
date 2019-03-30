@@ -18,6 +18,9 @@ contract FlightSuretyApp {
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
+    uint8 private constant AIRLINE_REGISTER_CONSENSUS_NUM_CONDITION = 4;
+    address[] multiCalls = new address[](0);
+    address currentVoteAirline=0x0;
 
     // Flight status codees
     uint8 private constant STATUS_CODE_UNKNOWN = 0;
@@ -32,12 +35,12 @@ contract FlightSuretyApp {
     struct Flight {
         bool isRegistered;
         uint8 statusCode;
-        uint256 updatedTimestamp;        
+        uint256 updatedTimestamp;
         address airline;
     }
     mapping(bytes32 => Flight) private flights;
 
- 
+
     /********************************************************************************************/
     /*                                       FUNCTION MODIFIERS                                 */
     /********************************************************************************************/
@@ -50,7 +53,7 @@ contract FlightSuretyApp {
     *      This is used on all state changing functions to pause the contract in 
     *      the event there is an issue that needs to be fixed
     */
-    modifier requireIsOperational() 
+    modifier requireIsOperational()
     {
          // Modify to call data contract's status
         require(flightSuretyData.isOperational(), "Contract is currently not operational");
@@ -93,13 +96,46 @@ contract FlightSuretyApp {
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
-  
+
    /**
     * @dev Add an airline to the registration queue
     *
-    */   
-    function registerAirline() external pure returns(bool success, uint256 votes)
+    */
+    function registerAirline(address _airline) external requireContractOwner returns (bool success, uint256 votes)
     {
+        bool isFunded = flightSuretyData.isAirlineFunded(_airline);
+        require(isFunded == true, "Caller is not a funded airline");
+
+        require(currentVoteAirline == 0x0 || currentVoteAirline == _airline, "Don't vote the different airline");
+
+        uint number = flightSuretyData.getAirlineNum();
+        //check consensus
+        if (number > AIRLINE_REGISTER_CONSENSUS_NUM_CONDITION) {
+            bool isRegistered = flightSuretyData.isAirlineRegistered(_airline);
+            require(isRegistered == true, "Caller is not a registered airline");
+
+            bool isDuplicate = false;
+            for (uint c = 0; c < multiCalls.length; c++) {
+                if (multiCalls[c] == msg.sender) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            require(!isDuplicate, "Caller has already called this function.");
+
+            multiCalls.push(msg.sender);
+            currentVoteAirline = _airline;
+
+            if (multiCalls.length >= number / 2) {// 50%
+                multiCalls = new address[](0);
+                currentVoteAirline = 0x0;
+                flightSuretyData.registerAirline(_airline);
+            }
+        } else {
+            flightSuretyData.registerAirline(_airline);
+            currentVoteAirline = 0x0;
+        }
+
         return (success, 0);
     }
 
@@ -107,7 +143,7 @@ contract FlightSuretyApp {
    /**
     * @dev Register a future flight for insuring.
     *
-    */  
+    */
     function registerFlight
                                 (
                                 )
@@ -116,11 +152,11 @@ contract FlightSuretyApp {
     {
 
     }
-    
+
    /**
     * @dev Called after oracle has updated flight status
     *
-    */  
+    */
     function processFlightStatus
                                 (
                                     address airline,
@@ -139,7 +175,7 @@ contract FlightSuretyApp {
                         (
                             address airline,
                             string flight,
-                            uint256 timestamp                            
+                            uint256 timestamp
                         )
                         external
     {
@@ -153,13 +189,13 @@ contract FlightSuretyApp {
                                             });
 
         emit OracleRequest(index, airline, flight, timestamp);
-    } 
+    }
 
 
 // region ORACLE MANAGEMENT
 
     // Incremented to add pseudo-randomness at various points
-    uint8 private nonce = 0;    
+    uint8 private nonce = 0;
 
     // Fee to be paid when registering oracle
     uint256 public constant REGISTRATION_FEE = 1 ether;
@@ -170,7 +206,7 @@ contract FlightSuretyApp {
 
     struct Oracle {
         bool isRegistered;
-        uint8[3] indexes;        
+        uint8[3] indexes;
     }
 
     // Track all registered oracles
@@ -250,7 +286,7 @@ contract FlightSuretyApp {
         require((oracles[msg.sender].indexes[0] == index) || (oracles[msg.sender].indexes[1] == index) || (oracles[msg.sender].indexes[2] == index), "Index does not match oracle request");
 
 
-        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp)); 
+        bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
         require(oracleResponses[key].isOpen, "Flight or timestamp do not match oracle request");
 
         oracleResponses[key].responses[statusCode].push(msg.sender);
@@ -276,22 +312,22 @@ contract FlightSuretyApp {
                         )
                         pure
                         internal
-                        returns(bytes32) 
+                        returns(bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
 
     // Returns array of three non-duplicating integers from 0-9
     function generateIndexes
-                            (                       
-                                address account         
+                            (
+                                address account
                             )
                             internal
                             returns(uint8[3])
     {
         uint8[3] memory indexes;
         indexes[0] = getRandomIndex(account);
-        
+
         indexes[1] = indexes[0];
         while(indexes[1] == indexes[0]) {
             indexes[1] = getRandomIndex(account);

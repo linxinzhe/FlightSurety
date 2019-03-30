@@ -14,12 +14,11 @@ contract FlightSuretyData {
 
     // Airlines
     struct Airline {
-        string name;
         bool registered;
         bool funded;
     }
 
-    mapping(address => Airline) public airlines;
+    mapping(address => Airline) private airlines;
     address[] private registeredAirlines;
 
     /********************************************************************************************/
@@ -96,7 +95,7 @@ contract FlightSuretyData {
 
     function initialFirstAirline(address _airline) internal requireIsOperational requireContractOwner
     {
-        airlines[_airline] = Airline({name : "Airline 1", registered : true, funded : false});
+        airlines[_airline] = Airline({registered : true, funded : false});
         registeredAirlines.push(_airline);
     }
 
@@ -105,10 +104,28 @@ contract FlightSuretyData {
      *      Can only be called from FlightSuretyApp contract
      *
      */
-    function registerAirline(address airline) external
+    function registerAirline(address _airline) external requireIsOperational
     {
+        require(isAirlineRegistered(_airline), "Caller is not a registered airline");
+        require(isAirlineFunded(_airline), "Caller is not a funded airline");
 
+        airlines[_airline] = Airline({registered : true, funded : false});
+        registeredAirlines.push(_airline);
     }
+
+    function isAirlineFunded(address _airline) view returns (bool success) {
+        return airlines[_airline].funded == true;
+    }
+
+    function isAirlineRegistered(address _airline) view returns (bool success) {
+        return airlines[_airline].registered == true;
+    }
+
+    function getAirlineNum() view returns (uint num){
+        return registeredAirlines.length;
+    }
+
+
 
 
     /**
