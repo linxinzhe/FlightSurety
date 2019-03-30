@@ -37,6 +37,7 @@ contract FlightSuretyApp {
         uint8 statusCode;
         uint256 updatedTimestamp;
         address airline;
+        string flight;
     }
     mapping(bytes32 => Flight) private flights;
 
@@ -77,10 +78,10 @@ contract FlightSuretyApp {
     * @dev Contract constructor
     *
     */
-    constructor(address dataContract) public
+    constructor(address _dataContract) public
     {
         contractOwner = msg.sender;
-        flightSuretyData = FlightSuretyData(dataContract);
+        flightSuretyData = FlightSuretyData(_dataContract);
     }
 
     /********************************************************************************************/
@@ -142,13 +143,12 @@ contract FlightSuretyApp {
     * @dev Register a future flight for insuring.
     *
     */
-    function registerFlight
-                                (
-                                )
-                                external
-                                pure
+    function registerFlight(address _airline, string _flight, uint256 _time) external requireIsOperational
     {
+        bytes32 key = getFlightKey(_airline, _flight, _time);
+        require(flights[key].isRegistered == false, "This flight is already registered");
 
+        flights[key] = Flight({isRegistered : true, statusCode : STATUS_CODE_UNKNOWN, updatedTimestamp : _time, airline : _airline, flight : _flight});
     }
 
    /**
