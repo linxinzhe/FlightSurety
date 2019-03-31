@@ -15,7 +15,7 @@ let flightSuretyData = new web3.eth.Contract(FlightSuretyData.abi, config.dataAd
 
 let registeredOracles = [];
 
-// Oracle Initialization:Upon startup, 20+ oracles are registered and their assigned indexes are persisted in memory
+// Oracle Initialization: Upon startup, 20+ oracles are registered and their assigned indexes are persisted in memory
 web3.eth.getAccounts(async (error, accounts) => {
 
     flightSuretyApp.methods.REGISTRATION_FEE().call({from: accounts[0]}, async (error, result) => {
@@ -49,12 +49,46 @@ web3.eth.getAccounts(async (error, accounts) => {
 
 flightSuretyApp.events.OracleRequest({
     fromBlock: 0
-}, function (error, event) {
+}, async function (error, event) {
     if (error) console.log(error);
 
     let statusCodes = [0, 10, 20, 30, 40, 50];
-    //random choice code
+    //FlightSuretyApp contract with random status code of Unknown (0), On Time (10) or Late Airline (20), Late Weather (30), Late Technical (40), or Late Other (50)
     let statusCode = statusCodes[Math.floor(Math.random() * statusCodes.length)];
+
+    let indexes;
+    let oracle;
+
+    // loop through all registered oracles, identify those oracles for which the OracleRequest event applies,
+    for (let i = 0; i < registeredOracles.length; i++) {
+        indexes = registeredOracles[i][1];
+
+        if (indexes.indexOf(index.toString()) !== -1) {
+            oracle = registeredOracles[i][0];
+            try {
+                await flightSuretyApp.methods
+                    .submitOracleResponse(
+                        event.returnValues.index,
+                        event.returnValues.airline,
+                        event.returnValues.flight,
+                        event.returnValues.timestamp,
+                        statusCode,
+                    )
+                    .send({from: oracle, gas: 200000}, (error, result) => {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log(result);
+                            console.log("Sent Oracle Response for " + oracle + " Status Code: " + statusCode);
+
+                        }
+                    });
+            } catch (e) {
+                console.log(e);
+            }
+
+        }
+    }
 
 });
 
