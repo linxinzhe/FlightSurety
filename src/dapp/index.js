@@ -75,6 +75,27 @@ import './flightsurety.css';
             });
         });
 
+        DOM.elid('flight-status').addEventListener('click', () => {
+            let flight = DOM.elid('flights3').value;
+            // Write transaction
+            let flightStatus = 0;
+
+            contract.fetchFlightStatus(flight, (error, result) => {
+                contract.flightStatusInfoEvent(result2 => {
+                    console.log(result2);
+                    flightStatus = result2.status;
+                    displayFlightStatus('flightStatusInfo', 'Flight Status', '', flightStatus, [{
+                        label: 'Flight Status : ',
+                        error: error,
+                        value: result.flight + ' ' + result.timestamp
+                    }]);
+                    getPassengerBalance();
+                    getPassengerCredits();
+                });
+            });
+        });
+
+
         async function getPassengerCredits() {
             await contract.getPassengerCredits(contract.passengers[1], (result) => {
                 //let creditText = DOM.elid('passCredit').value + " " + result;

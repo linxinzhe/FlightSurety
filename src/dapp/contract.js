@@ -150,6 +150,17 @@ export default class Contract {
             });
     }
 
+    async flightStatusInfoEvent(callback) {
+        let self = this;
+        await self.flightSuretyApp.events.FlightStatusInfo({}, function(error, event) {
+            if(error) {
+                console.log(error);
+            } else {
+                callback(event.returnValues);
+            }
+        })
+    }
+
     async getPassengerCredits(passenger, callback) {
         let self = this;
         self.flightSuretyApp.methods
