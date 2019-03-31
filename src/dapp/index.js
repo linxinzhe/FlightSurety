@@ -23,10 +23,23 @@ import './flightsurety.css';
 
         getBalance();
 
+        //UI
         populateSelect("airline", contract.airlines, 1);
         populateSelect("flights", contract.flights, 1);
         populateSelect("flights", contract.flights, 2);
         populateSelect("flights", contract.flights, 3);
+        flightChange('flights', 1, contract.flights);
+        flightChange('flights', 2, contract.flights);
+        flightChange('flights', 3, contract.flights);
+        DOM.elid('flights1').addEventListener('change', () => {
+            flightChange('flights', 1, contract.flights);
+        });
+        DOM.elid('flights2').addEventListener('change', () => {
+            flightChange('flights', 2, contract.flights);
+        });
+        DOM.elid('flights3').addEventListener('change', () => {
+            flightChange('flights', 3, contract.flights);
+        });
 
         DOM.elid('fund').addEventListener('click', () => {
             let airline = DOM.elid('airline1').value;
@@ -75,6 +88,37 @@ function populateSelect(type, selectOpts, el) {
         }
     });
 }
+function flightChange(el, n, flights){
+    el = el + n;
+    let flight = DOM.elid(el).value;
+    let flightArr = [];
+
+    for (let i = 0; i < flights.length; i++){
+        if(flights[i].flightNumber === flight){
+            flightArr.push(flights[i]);
+            break;
+        }
+    }
+
+    let num = el.charAt(el.length - 1);
+    if( n > 1)
+        displayFlightInfo(num, flightArr);
+}
+
+function displayFlightInfo(num, flight) {
+    let divname = "flightInfo" + num;
+    let displayDiv = DOM.elid(divname);
+    displayDiv.innerHTML = "";
+    let section = DOM.section();
+
+    let line1 = "Airlines: " + flight[0].airline + " Departs at: " + flight[0].time;
+    let line2 = "Departs From: " + flight[0].origin + " - Lands at: " + flight[0].dest;
+
+    section.appendChild(DOM.div({className: 'col-sm-6 field'}, line1));
+    section.appendChild(DOM.div({className: 'col-sm-6 field'}, line2));
+    displayDiv.append(section);
+}
+
 
 function displayContractBal(description, balance) {
     let displayDiv = DOM.elid("display-contract-balance");
@@ -133,16 +177,16 @@ function displayFlightStatus(divID, title, description, status, results) {
             displayStr = displayStr + " : On Time";
             break;
         case "20" :
-            displayStr = displayStr + " : Late due to Airline";
+            displayStr = displayStr + " : Late because of Airline";
             break;
         case "30" :
-            displayStr = displayStr + " : Late due to weather";
+            displayStr = displayStr + " : Late because of weather";
             break;
         case "40" :
-            displayStr = displayStr + " : Late due to technical problems";
+            displayStr = displayStr + " : Late because of technical problems";
             break;
         case "50" :
-            displayStr = displayStr + " : Late due to other reasons";
+            displayStr = displayStr + " : Late because of other reasons";
             break;
     }
 

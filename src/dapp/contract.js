@@ -45,7 +45,7 @@ export default class Contract {
 
             //Flight
             for (let i = 0; i < 4; i++) {
-                let time = Math.floor((Date.now() + (3600 * 10 + i)) / 1000);
+                let time = Math.floor((Date.now() + (3600 * 1 + i)) / 1000);
                 this.flights.push({
                     airline: accts[i + 1],
                     airlineName: fakeAirline[i],
