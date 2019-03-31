@@ -59,7 +59,7 @@ export default class Contract {
 
 
             for (let i = 0; i < 4; i++) {
-                this.passengers.push(accts[i]);
+                this.passengers.push(accts[i+5]);
             }
 
             callback();
@@ -180,5 +180,26 @@ export default class Contract {
 
         let balance = await self.web3.eth.getBalance(passenger);
         callback(balance);
+    }
+
+    async buyInsurancePassenger(flight, amount, callback) {
+        let self = this;
+        let sendAmount = self.web3.utils.toWei(amount, "ether").toString();
+
+        let tempFlight;
+
+        for (const item of self.flights) {
+            if (item.flightNumber === flight) {
+                tempFlight = item;
+                break;
+            }
+        }
+
+        console.log(self.owner);
+        await self.flightSuretyApp.methods
+            .buyInsurancePassenger(tempFlight.flightNumber, tempFlight.time, tempFlight.airline, self.owner)
+            .send({ from: self.owner, value: sendAmount,  gas:3000000 }, (error, result) => {
+                callback(error, result);
+            });
     }
 }

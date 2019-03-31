@@ -15,13 +15,13 @@ import './flightsurety.css';
             }]);
         });
 
-        async function getBalance() {
+        async function getContractBalance() {
             await contract.getContractBalance((error, result) => {
                 displayContractBal('Contract Balance:', result);
             })
         }
 
-        getBalance();
+        getContractBalance();
         getPassengerCredits();
         getPassengerBalance();
 
@@ -55,7 +55,7 @@ import './flightsurety.css';
                         airline: result,
                         amount: fundAmount
                     }]);
-                    getBalance();
+                    getContractBalance();
                 });
             } else {
                 alert("Airlines need to pay >0 ETH.");
@@ -117,6 +117,31 @@ import './flightsurety.css';
             getPassengerBalance();
         });
 
+        DOM.elid('buy').addEventListener('click', () => {
+            let flight = DOM.elid('flights2').value;
+            let amount = DOM.elid('insurance').value;
+            // Write transaction
+            if (amount !== "" || amount === 0) {
+                contract.buyInsurancePassenger(flight, amount, (error, result) => {
+                    let display = result;
+                    if (error) console.log(error);
+
+                    displayInsurance('Insurance Purchase', [{
+                        label: 'Purchase TX# : ',
+                        text: display,
+                        flight: flight,
+                        amount: amount
+                    }]);
+                    if (!error) {
+                        fillInsuranceInfo('Passenger is insured on : ', flight);
+                        getContractBalance();
+                        getPassengerBalance();
+                    }
+                });
+            } else {
+                alert("Insurance Amount is required and should be a number greater than zero.");
+            }
+        })
     });
 
 
@@ -240,6 +265,28 @@ function displayFlightStatus(divID, title, description, status, results) {
 
 }
 
+function displayInsurance(title, results) {
+    let displayDiv = DOM.elid("display-wrapper-insurance-status");
+    let section = DOM.section();
+    section.appendChild(DOM.h5(title));
+    results.map((result) => {
+        let row = section.appendChild(DOM.div({className: 'row'}));
+        row.appendChild(DOM.div({className: 'col-sm-4 field'}, result.label));
+        //row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, result.error ? String(result.error) : String(result.flight)));
+        //console.log(result.text);
+        row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, String(result.text)));
+        section.appendChild(row);
+    });
+    displayDiv.append(section);
+}
+
+function fillInsuranceInfo(title, flight) {
+    let displayDiv = DOM.elid("display-wrapper-insurance-info");
+    if (displayDiv.innerHTML.length === 0) {
+        displayDiv.appendChild(DOM.label(title));
+    }
+    displayDiv.appendChild(DOM.label(" - " + flight + " "));
+}
 
 
 

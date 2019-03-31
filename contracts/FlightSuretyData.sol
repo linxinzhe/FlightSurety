@@ -30,13 +30,15 @@ contract FlightSuretyData {
         uint256[] insurancePaid;
         string[] flights;
     }
-    mapping(address => Passenger) public InsuredPassengers; //Passenger mapping
+
+    //Passenger mapping
+    mapping(address => Passenger) public insurancePassengers;
 
     //Flight mapping Passenger
-    mapping(string => address[]) private FlightPassengers;
+    mapping(string => address[]) private flightPassengers;
 
-    //Flight to totalInsured Amount mapping e.g. UA047 => 5 ETH
-    mapping(string => uint256) private FlightInsuredAmount;
+    //Flight mapping Amount
+    mapping(string => uint256) private flightInsuranceTotalAmount;
 
     //Passenger address to insurance payment. Stores Insurance payouts for passengers
     mapping(address => uint256) private InsurancePayment;
@@ -153,9 +155,41 @@ contract FlightSuretyData {
      * @dev Buy insurance for a flight
      *
      */
-    function buy()external payable
+    event Log(string s1);
+    function buy(string memory _flight,uint256 _time,address _passenger,address _sender,uint256 _amount) public requireIsOperational
     {
+        string[] memory _flights = new string[](5);
+        bool[] memory paid = new bool[](5);
+        uint256[] memory insurance = new uint[](5);
+        uint index;
 
+        emit Log("1");
+        if(insurancePassengers[_passenger].isInsured == true){
+            emit Log("2");
+            index = getFlightIndex(_passenger, _flight) ;
+
+            require(index == 0, "Passenger don't insure the same flight");
+            emit Log("3");
+
+            //otherwise input another insurance
+            insurancePassengers[_passenger].isPaid.push(false);
+            insurancePassengers[_passenger].insurancePaid.push(_amount);
+            insurancePassengers[_passenger].flights.push(_flight);
+
+        }else {
+            emit Log("4");
+            // initial insurance
+            paid[0] = false;
+            insurance[0] = _amount;
+            _flights[0] = _flight;
+            insurancePassengers[_passenger] = Passenger({isInsured: true, isPaid: paid, insurancePaid: insurance, flights: _flights});
+        }
+
+        emit Log("5");
+        // insurance amount cal
+        contractBalance = contractBalance.add(_amount);
+        flightPassengers[_flight].push(_passenger);
+        flightInsuranceTotalAmount[_flight] = flightInsuranceTotalAmount[_flight].add(_amount);
     }
 
     /**
@@ -188,6 +222,20 @@ contract FlightSuretyData {
     function getFlightKey(address airline,string memory flight,uint256 timestamp) pure internal returns (bytes32)
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
+    }
+
+    function getFlightIndex(address _passenger, string memory _flight) public view returns(uint index)
+    {
+        string[] memory flights = new string[](5);
+        flights = insurancePassengers[_passenger].flights;
+
+        for(uint i = 0; i < flights.length; i++){
+            if(uint(keccak256(abi.encodePacked(flights[i]))) == uint(keccak256(abi.encodePacked(_flight)))) {
+                return(i + 1);
+            }
+        }
+
+        return(0);
     }
 
     function getPassengerCredits(address passenger)external view requireIsOperational returns(uint256 amount)
