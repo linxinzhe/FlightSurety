@@ -124,7 +124,6 @@ import './flightsurety.css';
             if (amount !== "" || amount === 0) {
                 contract.buyInsurancePassenger(flight, amount, (error, result) => {
                     let display = result;
-                    if (error) console.log(error);
 
                     displayInsurance('Insurance Purchase', [{
                         label: 'Purchase TX# : ',
@@ -272,8 +271,6 @@ function displayInsurance(title, results) {
     results.map((result) => {
         let row = section.appendChild(DOM.div({className: 'row'}));
         row.appendChild(DOM.div({className: 'col-sm-4 field'}, result.label));
-        //row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, result.error ? String(result.error) : String(result.flight)));
-        //console.log(result.text);
         row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, String(result.text)));
         section.appendChild(row);
     });

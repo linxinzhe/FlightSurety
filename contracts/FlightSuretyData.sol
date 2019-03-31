@@ -155,7 +155,6 @@ contract FlightSuretyData {
      * @dev Buy insurance for a flight
      *
      */
-    event Log(string s1);
     function buy(string memory _flight,uint256 _time,address _passenger,address _sender,uint256 _amount) public requireIsOperational
     {
         string[] memory _flights = new string[](5);
@@ -163,13 +162,10 @@ contract FlightSuretyData {
         uint256[] memory insurance = new uint[](5);
         uint index;
 
-        emit Log("1");
         if(insurancePassengers[_passenger].isInsured == true){
-            emit Log("2");
             index = getFlightIndex(_passenger, _flight) ;
 
             require(index == 0, "Passenger don't insure the same flight");
-            emit Log("3");
 
             //otherwise input another insurance
             insurancePassengers[_passenger].isPaid.push(false);
@@ -177,7 +173,6 @@ contract FlightSuretyData {
             insurancePassengers[_passenger].flights.push(_flight);
 
         }else {
-            emit Log("4");
             // initial insurance
             paid[0] = false;
             insurance[0] = _amount;
@@ -185,7 +180,6 @@ contract FlightSuretyData {
             insurancePassengers[_passenger] = Passenger({isInsured: true, isPaid: paid, insurancePaid: insurance, flights: _flights});
         }
 
-        emit Log("5");
         // insurance amount cal
         contractBalance = contractBalance.add(_amount);
         flightPassengers[_flight].push(_passenger);

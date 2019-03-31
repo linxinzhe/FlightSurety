@@ -194,7 +194,6 @@ contract FlightSuretyApp {
     function buyInsurancePassenger(string _flight, uint256 _time, address airline, address _passenger) external payable requireIsOperational
     {
         require(msg.value <= MAX_INSURANCE, "Passengers may pay up to 1 ETH");
-        address(flightSuretyData).transfer(msg.value);
         flightSuretyData.buy(_flight, _time, _passenger, msg.sender, msg.value);
     }
 
