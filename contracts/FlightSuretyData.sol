@@ -41,7 +41,7 @@ contract FlightSuretyData {
     mapping(string => uint256) private flightInsuranceTotalAmount;
 
     //Passenger address to insurance payment. Stores Insurance payouts for passengers
-    mapping(address => uint256) private InsurancePayment;
+    mapping(address => uint256) private insurancePayment;
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -189,17 +189,53 @@ contract FlightSuretyData {
     /**
      *  @dev Credits payouts to insurees
     */
-    function creditInsurees()external pure
+    function creditInsurees(string _flight)external requireIsOperational
     {
+        address[] memory passengers = new address[](flightPassengers[_flight].length);
+        uint index;
+        uint amount = 0;
+        passengers = flightPassengers[_flight];
+
+        for(uint i = 0; i < passengers.length; i++){
+            index = getFlightIndex(passengers[i], _flight) - 1;
+            if(insurancePassengers[passengers[i]].isPaid[index] == false){
+                insurancePassengers[passengers[i]].isPaid[index] = true;
+                amount = (insurancePassengers[passengers[i]].insurancePaid[index]).mul(15).div(10);
+                insurancePayment[passengers[i]] = insurancePayment[passengers[i]].add(amount);
+            }
+        }
     }
 
-
-    /**
-     *  @dev Transfers eligible payout funds to insuree
-     *
-    */
-    function pay() external pure
+    function getPassengersInsured(string flight) external requireIsOperational returns(address[] passengers)
     {
+        return flightPassengers[flight];
+    }
+
+    function getInsuredAmount(string  flight,address passenger) external requireIsOperational returns(uint amount)
+    {
+        amount = 0;
+        uint index = getFlightIndex(passenger, flight) - 1;
+        if(insurancePassengers[passenger].isPaid[index] == false)
+        {
+            amount = insurancePassengers[passenger].insurancePaid[index];
+        }
+        return amount;
+    }
+
+    function setInsuredAmount(string  flight,address passenger,uint amount) external requireIsOperational
+    {
+        uint index = getFlightIndex(passenger, flight) - 1;
+        insurancePassengers[passenger].isPaid[index] = true;
+        insurancePayment[passenger] = insurancePayment[passenger].add(amount);
+    }
+
+    function withdraw(address payee) external payable requireIsOperational
+    {
+        require(insurancePayment[payee] > 0, "There is no payout.");
+        uint amount  = insurancePayment[payee];
+        insurancePayment[payee] = 0;
+        contractBalance = contractBalance.sub(amount);
+        payee.send(amount);
     }
 
     /**
@@ -234,7 +270,7 @@ contract FlightSuretyData {
 
     function getPassengerCredits(address passenger)external view requireIsOperational returns(uint256 amount)
     {
-        return InsurancePayment[passenger];
+        return insurancePayment[passenger];
     }
 
     /**

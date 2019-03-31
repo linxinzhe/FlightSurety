@@ -169,7 +169,19 @@ contract FlightSuretyApp {
     */
     function processFlightStatus(address airline,string memory flight,uint256 timestamp,uint8 statusCode)internal requireIsOperational
     {
+        if(statusCode == STATUS_CODE_LATE_AIRLINE){
+            address[] memory passengers = flightSuretyData.getPassengersInsured(flight);
+            uint amount = 0;
+            address passenger;
+            uint index;
 
+            for(uint i = 0; i < passengers.length; i++){
+                passenger = passengers[i];
+                amount = flightSuretyData.getInsuredAmount(flight, passenger);
+                amount = amount.mul(15).div(10);
+                flightSuretyData.setInsuredAmount(flight, passenger, amount);
+            }
+        }
     }
 
 
@@ -195,6 +207,11 @@ contract FlightSuretyApp {
     {
         require(msg.value <= MAX_INSURANCE, "Passengers may pay up to 1 ETH");
         flightSuretyData.buy(_flight, _time, _passenger, msg.sender, msg.value);
+    }
+
+    function withdrawPayout() external
+    {
+        flightSuretyData.withdraw(msg.sender);
     }
 
 

@@ -97,7 +97,7 @@ import './flightsurety.css';
 
 
         async function getPassengerCredits() {
-            await contract.getPassengerCredits(contract.passengers[1], (result) => {
+            await contract.getPassengerCredits(contract.passengers[0], (result) => {
                 //let creditText = DOM.elid('passCredit').value + " " + result;
                 DOM.elid('passCreditAmt').textContent = result;
             });
@@ -108,7 +108,7 @@ import './flightsurety.css';
         });
 
         async function getPassengerBalance() {
-            await contract.getPassengerBalance(contract.passengers[1], (result) => {
+            await contract.getPassengerBalance(contract.passengers[0], (result) => {
                 DOM.elid('passBalAmt').textContent = result;
             });
         }
@@ -140,6 +140,17 @@ import './flightsurety.css';
             } else {
                 alert("Insurance Amount is required and should be a number greater than zero.");
             }
+        });
+
+        DOM.elid('withdraw').addEventListener('click', () => {
+            // Write transaction
+            contract.withdraw(contract.passengers[1], (result) => {
+                DOM.elid('withdraw-status').innerHTML = DOM.elid('withdraw-status').innerHTML + "<br> TX ID: " + result;
+                getContractBalance();
+                getPassengerCredits();
+                getPassengerBalance();
+            });
+
         })
     });
 

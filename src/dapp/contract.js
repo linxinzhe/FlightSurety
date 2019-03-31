@@ -59,7 +59,7 @@ export default class Contract {
 
 
             for (let i = 0; i < 4; i++) {
-                this.passengers.push(accts[i+5]);
+                this.passengers.push(accts[i+4]);
             }
 
             callback();
@@ -197,9 +197,24 @@ export default class Contract {
 
         console.log(self.owner);
         await self.flightSuretyApp.methods
-            .buyInsurancePassenger(tempFlight.flightNumber, tempFlight.time, tempFlight.airline, self.owner)
-            .send({ from: self.owner, value: sendAmount,  gas:3000000 }, (error, result) => {
+            .buyInsurancePassenger(tempFlight.flightNumber, tempFlight.time, tempFlight.airline, self.passengers[0])
+            .send({ from: self.passengers[0], value: sendAmount,  gas:3000000 }, (error, result) => {
                 callback(error, result);
+            });
+    }
+
+    async withdraw(passenger, callback){
+        let self = this;
+
+        await self.flightSuretyApp.methods
+            .withdrawPayout()
+            .send({from: passenger}, (error, result) => {
+                if(error){
+                    console.log(error);
+                }else {
+                    console.log(result);
+                    callback(result);
+                }
             });
     }
 }
