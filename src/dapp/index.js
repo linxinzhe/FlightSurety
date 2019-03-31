@@ -24,6 +24,7 @@ import './flightsurety.css';
         getBalance();
 
         populateSelect("airline", contract.airlines, 1);
+        populateSelect("flights", contract.flights, 1);
 
         DOM.elid('fund').addEventListener('click', () => {
             let airline = DOM.elid('airline1').value;
@@ -49,7 +50,7 @@ import './flightsurety.css';
             let flight = DOM.elid('flight-number').value;
             // Write transaction
             contract.fetchFlightStatus(flight, (error, result) => {
-                display('Oracles', 'Trigger oracles', [{
+                displayFlightStatus('display-wrapper-flight-status','Oracles', 'Trigger oracles', [{
                     label: 'Fetch Flight Status',
                     error: error,
                     value: result.flight + ' ' + result.timestamp
@@ -68,7 +69,7 @@ function populateSelect(type, selectOpts, el) {
         if (type === 'airline') {
             select.appendChild(DOM.option({value: opt.address}, opt.name));
         } else if (type === 'flights') {
-            select.appendChild(DOM.option({value: opt.flightNumber}, opt.name));
+            select.appendChild(DOM.option({value: opt.flightNumber}, opt.flightNumber));
         }
     });
 }
@@ -110,8 +111,45 @@ function displayOpeartionalStatus(title, description, results) {
 
 }
 
+function displayFlightStatus(divID, title, description, status, results) {
+    //console.log(results)
+    let displayDiv = DOM.elid(divID);
+    displayDiv.innerHTML = "";
+    let section = DOM.section();
 
+    section.appendChild(DOM.h5(description));
 
+    let row = section.appendChild(DOM.div({className:'row'}));
+    row.appendChild(DOM.div({className: 'col-sm-4 field'}, results[0].label));
+    let displayStr = String(results[0].value);
+
+    switch(status){
+        case "0" :
+            displayStr = displayStr + " : Unknown";
+            break;
+        case "10" :
+            displayStr = displayStr + " : On Time";
+            break;
+        case "20" :
+            displayStr = displayStr + " : Late due to Airline";
+            break;
+        case "30" :
+            displayStr = displayStr + " : Late due to weather";
+            break;
+        case "40" :
+            displayStr = displayStr + " : Late due to technical problems";
+            break;
+        case "50" :
+            displayStr = displayStr + " : Late due to other reasons";
+            break;
+    }
+
+    row.appendChild(DOM.div({className: 'col-sm-8 field-value'}, results[0].error ? String(results[0].error) : displayStr));
+    section.appendChild(row);
+
+    displayDiv.append(section);
+
+}
 
 
 

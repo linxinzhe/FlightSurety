@@ -99,6 +99,7 @@ export default class Contract {
 
     async registerFlights() {
         for (let i = 0; i < this.flights.length; i++) {
+            console.log(this.flights[i]);
             await this.flightSuretyApp.methods
                 .registerFlight(this.flights[i].airline, this.flights[i].flightNumber, this.flights[i].time)
                 .call({from: self.owner});
