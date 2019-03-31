@@ -22,6 +22,8 @@ import './flightsurety.css';
         }
 
         getBalance();
+        getPassengerCredits();
+        getPassengerBalance();
 
         //UI
         populateSelect("airline", contract.airlines, 1);
@@ -65,13 +67,34 @@ import './flightsurety.css';
             let flight = DOM.elid('flights1').value;
             // Write transaction
             contract.fetchFlightStatus(flight, (error, result) => {
-                displayFlightStatus('display-wrapper-flight-status','Oracles', 'Trigger oracles', "0",[{
+                displayFlightStatus('display-wrapper-flight-status', 'Oracles', 'Trigger oracles', "0", [{
                     label: 'Fetch Flight Status',
                     error: error,
                     value: result.flight + ' ' + result.timestamp
                 }]);
             });
-        })
+        });
+
+        async function getPassengerCredits() {
+            await contract.getPassengerCredits(contract.passengers[1], (result) => {
+                //let creditText = DOM.elid('passCredit').value + " " + result;
+                DOM.elid('passCreditAmt').textContent = result;
+            });
+        }
+
+        DOM.elid('getCredit').addEventListener('click', () => {
+            getPassengerCredits();
+        });
+
+        async function getPassengerBalance() {
+            await contract.getPassengerBalance(contract.passengers[1], (result) => {
+                DOM.elid('passBalAmt').textContent = result;
+            });
+        }
+
+        DOM.elid('getBalance').addEventListener('click', () => {
+            getPassengerBalance();
+        });
 
     });
 
@@ -88,20 +111,21 @@ function populateSelect(type, selectOpts, el) {
         }
     });
 }
-function flightChange(el, n, flights){
+
+function flightChange(el, n, flights) {
     el = el + n;
     let flight = DOM.elid(el).value;
     let flightArr = [];
 
-    for (let i = 0; i < flights.length; i++){
-        if(flights[i].flightNumber === flight){
+    for (let i = 0; i < flights.length; i++) {
+        if (flights[i].flightNumber === flight) {
             flightArr.push(flights[i]);
             break;
         }
     }
 
     let num = el.charAt(el.length - 1);
-    if( n > 1)
+    if (n > 1)
         displayFlightInfo(num, flightArr);
 }
 
@@ -164,10 +188,10 @@ function displayFlightStatus(divID, title, description, status, results) {
 
     section.appendChild(DOM.h5(description));
 
-    let row = section.appendChild(DOM.div({className:'row'}));
+    let row = section.appendChild(DOM.div({className: 'row'}));
     row.appendChild(DOM.div({className: 'col-sm-4 field'}, results[0].label));
     let displayStr = String(results[0].value);
-    switch(status){
+    switch (status) {
         case "0" :
             displayStr = displayStr + " : Unknown";
             break;

@@ -149,4 +149,25 @@ export default class Contract {
                 callback(error, payload);
             });
     }
+
+    async getPassengerCredits(passenger, callback) {
+        let self = this;
+        self.flightSuretyApp.methods
+            .getPassengerCredits(passenger)
+            .call({from: passenger}, (error, result) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(result);
+                    callback(result);
+                }
+            });
+    }
+
+    async getPassengerBalance(passenger, callback) {
+        let self = this;
+
+        let balance = await self.web3.eth.getBalance(passenger);
+        callback(balance);
+    }
 }

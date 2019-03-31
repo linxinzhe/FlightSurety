@@ -184,6 +184,11 @@ contract FlightSuretyApp {
         emit OracleRequest(index, airline, flight, timestamp);
     }
 
+    function getPassengerCredits(address passenger)external view requireIsOperational returns(uint256 amount)
+    {
+        return flightSuretyData.getPassengerCredits(passenger);
+    }
+
 
 // region ORACLE MANAGEMENT
 

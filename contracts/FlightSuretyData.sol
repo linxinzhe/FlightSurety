@@ -190,6 +190,11 @@ contract FlightSuretyData {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
 
+    function getPassengerCredits(address passenger)external view requireIsOperational returns(uint256 amount)
+    {
+        return InsurancePayment[passenger];
+    }
+
     /**
     * @dev Fallback function for funding smart contract.
     *
