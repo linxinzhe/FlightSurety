@@ -16,6 +16,7 @@ To install, download or clone the repo, then:
 To run truffle tests:
 
 `truffle test ./test/flightSurety.js`
+`truffle test ./test/flightSurety_airline.js`
 `truffle test ./test/oracles.js`
 
 To use the dapp:
@@ -38,6 +39,19 @@ To build dapp for prod:
 `npm run dapp:prod`
 
 Deploy the contents of the ./dapp folder
+
+## Run
+```
+Terminal 1:
+ganache-cli -m "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat"
+
+Terminal 2:
+truffle migrate
+npm run dapp
+
+Terminal 3:
+npm run server
+```
 
 
 ## Resources
