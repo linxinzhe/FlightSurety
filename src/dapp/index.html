@@ -28,21 +28,71 @@
 
     <h2>Airline</h2>
     <div id="display-wrapper-funding-status" class="top-20"></div>
-    <div id="display-airline" class="top-20">
-        <div class="top-20">
-            <label for="airline1">Airline</label><select id="airline1"></select>
-            <label for="fundAmount">Fund Amount (ETH)</label><input type="text" id="fundAmount" value="10"/>&nbsp;&nbsp;
-            <button class="btn btn-primary" id="fund">Fund Airline</button>
-        </div>
+    <div id="display-airline">
+        <label for="airline1">Airline</label><select id="airline1"></select>
+        <label for="fundAmount">Fund Amount (ETH)</label><input type="text" id="fundAmount" value="10"/>&nbsp;&nbsp;
+        <button class="btn btn-primary" id="fund">Fund Airline</button>
     </div>
 
+    <br/>
+    <br/>
+    <br/>
+
     <h2>Flight</h2>
-    <div id="display-wrapper-flight-status" class="top-20">
-    <div class="row top-20">
+    <div id="display-wrapper-flight-status" class="top-20"></div>
+    <div class="row">
         <label for="flights1">Flight</label>
         <select id="flights1"></select>&nbsp;
         <button class="btn btn-primary" id="submit-oracle">Submit to Oracles</button>
     </div>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <h2>Passenger</h2>
+    <h4>Purchase Flight Insurance</h4>
+    <div id="display-wrapper-insurance-info" class="top-20"></div>
+    <div id="display-wrapper-insurance-status" class="top-20"></div>
+    <div class="row">
+        <label for="flights2">Flight</label>
+        <select id="flights2"></select>
+        <label for="insurance">Amount (ETH)</label><input type="text" id="insurance" value="1"/>
+        <button class="btn btn-primary" id="purchase">Buy Insurance</button>
+    </div>
+
+    <br/>
+    <br/>
+
+    <h4>Claim Flight Insurance</h4>
+    <h5>Flight Status</h5>
+    <div class="row">
+        <label for="flights3">Flight</label>
+        <select id="flights3"></select>
+        <button class="btn btn-primary" id="flight-status">Get Flight Status</button>
+        <div id="flightStatusInfo"></div>
+    </div>
+
+    <h5>Passenger Status</h5>
+    <div id="display-claim-insurance" class="row">
+        <label id="passCredit">Passenger Insurance Credit : </label>
+        <label id="passCreditAmt"></label>
+        <button class="btn btn-primary" id="checkCredit">Get Credit</button>
+
+        <br/>
+
+        <label id="passBal">Passenger Account Balance : </label>
+        <label id="passBalAmt"></label>
+        <button class="btn btn-primary" id="getBalance">Get Balance</button>
+    </div>
+
+    <br/>
+    <br/>
+
+    <h4>Withdraw Insurance Credit</h4>
+    <Button class="btn btn-primary" id="withdraw">Withdraw</Button>
+    <div id="withdraw-status"></div>
+
 </main>
 
 </body>

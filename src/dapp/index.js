@@ -25,6 +25,8 @@ import './flightsurety.css';
 
         populateSelect("airline", contract.airlines, 1);
         populateSelect("flights", contract.flights, 1);
+        populateSelect("flights", contract.flights, 2);
+        populateSelect("flights", contract.flights, 3);
 
         DOM.elid('fund').addEventListener('click', () => {
             let airline = DOM.elid('airline1').value;
