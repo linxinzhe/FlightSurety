@@ -11,36 +11,38 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-        <a class="navbar-brand" href="#">FlightSurety</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">FlightSurety</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault"
             aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
 
-    <main class="container">
+<main class="container">
 
-        <div id="display-wrapper" class="top-20">
+    <div id="display-wrapper-operational-status" class="top-20"></div>
+
+    <div id="display-contract-balance" class="top-20"></div>
+
+    <h2>Airline</h2>
+    <div id="display-wrapper-funding-status" class="top-20"></div>
+    <div id="display-airline" class="top-20">
+        <div class="top-20">
+            <label for="airline1">Airline</label><select id="airline1"></select>
+            <label for="fundAmount">Fund Amount (ETH)</label><input type="text" id="fundAmount" value="10"/>&nbsp;&nbsp;
+            <button class="btn btn-primary" id="fund">Fund Airline</button>
         </div>
+    </div>
 
-        <div id="display-contract-balance" class="top-20"></div>
-
-        <h2>Airline</h2>
-        <div id="display-wrapper-funding-status" class="top-20"></div>
-        <div id="display-airline" class="top-20">
-            <div class="top-20">
-                <label for="airline1" >Airline</label><select id="airline1"></select>
-                <label for="fundAmount">Fund Amount (ETH)</label><input type="text" id="fundAmount" value="10"/>&nbsp;&nbsp;
-                <button class="btn btn-primary" id="fund">Fund Airline</button>
-            </div>
-        </div>
-
-
-        <div class="row top-20">
-            <label class="form">Flight</label> <input type="text" id="flight-number"> <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
-        </div>
-    </main>
+    <h2>Flight</h2>
+    <div class="row top-20">
+        <label for="flights1">Flight</label>
+        <select id="flights1"></select>&nbsp;
+        <button class="btn btn-primary" id="submit-oracle">Submit to Oracles</button>
+    </div>
+</main>
 
 </body>
 

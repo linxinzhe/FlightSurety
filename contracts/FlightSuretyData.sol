@@ -112,9 +112,14 @@ contract FlightSuretyData {
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
-    function getContractBalance() external view requireIsOperational returns(uint balance)
+    function getContractBalance() external view requireIsOperational returns(uint256 balance)
     {
         return contractBalance;
+    }
+
+    function getAirlineFund(address _airline) external view requireIsOperational returns(uint256 balance)
+    {
+        return airlines[_airline].fundBalance;
     }
 
     function initialFirstAirline(address _airline) internal requireIsOperational{

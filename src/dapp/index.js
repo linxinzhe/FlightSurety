@@ -5,15 +5,11 @@ import './flightsurety.css';
 
 
 (async() => {
-
-    let result = null;
-
     let contract = new Contract('localhost', () => {
 
         // Read transaction
         contract.isOperational((error, result) => {
-            console.log(error,result);
-            display('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
+            displayOpeartionalStatus('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
         });
 
         async function getBalance() {
@@ -90,8 +86,8 @@ function displayFund(title, results) {
     displayDiv.append(section);
 }
 
-function display(title, description, results) {
-    let displayDiv = DOM.elid("display-wrapper");
+function displayOpeartionalStatus(title, description, results) {
+    let displayDiv = DOM.elid("display-wrapper-operational-status");
     let section = DOM.section();
     section.appendChild(DOM.h2(title));
     section.appendChild(DOM.h5(description));

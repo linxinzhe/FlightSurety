@@ -97,7 +97,7 @@ contract FlightSuretyApp {
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
-    function getContractBalance() external view requireIsOperational returns(uint balance)
+    function getContractBalance() external view requireIsOperational returns(uint256 balance)
     {
         return flightSuretyData.getContractBalance();
     }
@@ -144,6 +144,11 @@ contract FlightSuretyApp {
         flightSuretyData.fund(msg.value, _airline);
     }
 
+
+    function getAirlineFund(address _airline) external returns(uint256 balance)
+    {
+        return flightSuretyData.getAirlineFund(_airline);
+    }
 
    /**
     * @dev Register a future flight for insuring.
