@@ -65,7 +65,7 @@ import './flightsurety.css';
             let flight = DOM.elid('flights1').value;
             // Write transaction
             contract.fetchFlightStatus(flight, (error, result) => {
-                displayFlightStatus('display-wrapper-flight-status','Oracles', 'Trigger oracles', [{
+                displayFlightStatus('display-wrapper-flight-status','Oracles', 'Trigger oracles', "0",[{
                     label: 'Fetch Flight Status',
                     error: error,
                     value: result.flight + ' ' + result.timestamp
@@ -158,7 +158,6 @@ function displayOpeartionalStatus(title, description, results) {
 }
 
 function displayFlightStatus(divID, title, description, status, results) {
-    //console.log(results)
     let displayDiv = DOM.elid(divID);
     displayDiv.innerHTML = "";
     let section = DOM.section();
@@ -168,7 +167,6 @@ function displayFlightStatus(divID, title, description, status, results) {
     let row = section.appendChild(DOM.div({className:'row'}));
     row.appendChild(DOM.div({className: 'col-sm-4 field'}, results[0].label));
     let displayStr = String(results[0].value);
-
     switch(status){
         case "0" :
             displayStr = displayStr + " : Unknown";

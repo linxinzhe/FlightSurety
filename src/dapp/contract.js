@@ -132,9 +132,9 @@ export default class Contract {
     async fetchFlightStatus(flight, callback) {
         let self = this;
         let airline;
-        for (const flight of self.flights) {
-            if (flight.flightNumber === flight) {
-                airline = flight.airline;
+        for (const item of self.flights) {
+            if (item.flightNumber === flight) {
+                airline = item.airline;
                 break;
             }
         }
