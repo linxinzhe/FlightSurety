@@ -15,25 +15,28 @@ export default class Contract {
     }
 
     initialize(callback) {
-        this.web3.eth.getAccounts((error, accts) => {
-
+        this.web3.eth.getAccounts(async (error, accts) => {
+            console.log(accts);
             this.owner = accts[0];
 
-            let fakeAirline = ['AAA', 'BBB', 'CCC', 'DDD', 'EEE'];
-            let fakeFlight = ['AA111', 'BB222', 'CC333', 'DD444', 'EE555'];
-            let fakeFlightOrigin = ['A1', 'B1', 'C1', 'D1', 'E1'];
-            let fakeFlightDest = ['A2', 'B2', 'C2', 'D2', 'E2'];
-            let fakeFlightTime = ['6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM'];
+            let fakeAirline = ['AAA', 'BBB', 'CCC', 'DDD'];
+            let fakeFlight = ['AA111', 'BB222', 'CC333', 'DD444'];
+            let fakeFlightOrigin = ['A1', 'B1', 'C1', 'D1'];
+            let fakeFlightDest = ['A2', 'B2', 'C2', 'D2'];
+            let fakeFlightTime = ['6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM'];
 
-            let counter = 0;
 
-            while (counter < 5) {
-                this.airlines.push({address: accts[counter], name: fakeAirline[counter], fundBalance: 0});
-                counter++;
+            for (let i = 0; i < 4; i++) {
+                this.airlines.push({address: accts[i], name: fakeAirline[i], fundBalance: 0});
+                if (i === 0) {
+                    continue;
+                }
+                await this.flightSuretyApp.methods.registerAirline(accts[i+1]).call({from: accts[1]}, callback);
+                console.log(this.airlines);
             }
 
-            counter = 0;
-            while (counter < 5) {
+
+            for (let i = 0; i < 4; i++) {
                 this.passengers.push(accts[counter++]);
             }
 
@@ -53,7 +56,7 @@ export default class Contract {
 
         await self.flightSuretyApp.methods
             .getContractBalance()
-            .call({ from: self.owner }, callback);
+            .call({from: self.owner}, callback);
     }
 
     async fundAirline(airline, fundAmount, callback) {

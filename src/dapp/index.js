@@ -18,10 +18,6 @@ import './flightsurety.css';
 
         async function getBalance() {
             await contract.getContractBalance((error, result) => {
-                if(error)
-                    console.log(error);
-                else
-                    console.log(`contract balance = ${result}`);
                 displayContractBal('Contract Balance:', result);
             })
         }
