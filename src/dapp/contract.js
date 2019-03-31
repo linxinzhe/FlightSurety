@@ -129,14 +129,21 @@ export default class Contract {
             });
     }
 
-    fetchFlightStatus(flight, callback) {
+    async fetchFlightStatus(flight, callback) {
         let self = this;
+        let airline;
+        for (const flight of self.flights) {
+            if (flight.flightNumber === flight) {
+                airline = flight.airline;
+                break;
+            }
+        }
         let payload = {
-            airline: self.airlines[0],
+            airline: airline,
             flight: flight,
             timestamp: Math.floor(Date.now() / 1000)
         };
-        self.flightSuretyApp.methods
+        await self.flightSuretyApp.methods
             .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
             .send({from: self.owner}, (error, result) => {
                 callback(error, payload);
