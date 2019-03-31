@@ -1,15 +1,18 @@
-
 import DOM from './dom';
 import Contract from './contract';
 import './flightsurety.css';
 
 
-(async() => {
+(async () => {
     let contract = new Contract('localhost', () => {
 
         // Read transaction
         contract.isOperational((error, result) => {
-            displayOpeartionalStatus('Operational Status', 'Check if contract is operational', [ { label: 'Operational Status', error: error, value: result} ]);
+            displayOpeartionalStatus('Operational Status', 'Check if contract is operational', [{
+                label: 'Operational Status',
+                error: error,
+                value: result
+            }]);
         });
 
         async function getBalance() {
@@ -46,20 +49,26 @@ import './flightsurety.css';
             let flight = DOM.elid('flight-number').value;
             // Write transaction
             contract.fetchFlightStatus(flight, (error, result) => {
-                display('Oracles', 'Trigger oracles', [ { label: 'Fetch Flight Status', error: error, value: result.flight + ' ' + result.timestamp} ]);
+                display('Oracles', 'Trigger oracles', [{
+                    label: 'Fetch Flight Status',
+                    error: error,
+                    value: result.flight + ' ' + result.timestamp
+                }]);
             });
         })
-    
+
     });
-    
+
 
 })();
 
-function populateSelect(type, selectOpts, el){
+function populateSelect(type, selectOpts, el) {
     let select = DOM.elid(type + el);
     selectOpts.forEach(opt => {
-        if((type  === 'airline' && opt.fundBalance === 0) || type === 'flights'){
+        if (type === 'airline') {
             select.appendChild(DOM.option({value: opt.address}, opt.name));
+        } else if (type === 'flights') {
+            select.appendChild(DOM.option({value: opt.flightNumber}, opt.name));
         }
     });
 }
