@@ -16,7 +16,6 @@ export default class Contract {
 
     initialize(callback) {
         this.web3.eth.getAccounts(async (error, accts) => {
-            console.log(accts);
             this.owner = accts[0];
 
             let fakeAirline = ['AAA', 'BBB', 'CCC', 'DDD'];
@@ -28,16 +27,12 @@ export default class Contract {
 
             for (let i = 0; i < 4; i++) {
                 this.airlines.push({address: accts[i], name: fakeAirline[i], fundBalance: 0});
-                if (i === 0) {
-                    continue;
-                }
-                await this.flightSuretyApp.methods.registerAirline(accts[i+1]).call({from: accts[1]}, callback);
-                console.log(this.airlines);
             }
+            this.registerAirlines(accts, (error, result) => {});
 
 
             for (let i = 0; i < 4; i++) {
-                this.passengers.push(accts[counter++]);
+                this.passengers.push(accts[i]);
             }
 
             callback();
@@ -58,6 +53,16 @@ export default class Contract {
             .getContractBalance()
             .call({from: self.owner}, callback);
     }
+
+    async registerAirlines(accts, callback) {
+        for (let i = 0; i < this.airlines.length; i++) {
+            if (i === 0) {
+                continue;
+            }
+            await this.flightSuretyApp.methods.registerAirline(accts[i + 1]).call({from: accts[1]}, callback);
+        }
+    }
+
 
     async fundAirline(airline, fundAmount, callback) {
         let self = this;
