@@ -13,6 +13,8 @@ contract FlightSuretyData {
     bool private operational = true;                                    // Blocks all state changes throughout the contract if false
     uint256 private contractBalance = 0 ether;
 
+    address[] public multiCalls = new address[](0);
+
     // Airlines
     struct Airline {
         bool registered;
@@ -89,6 +91,22 @@ contract FlightSuretyData {
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
+
+    function multiCallsLength() public returns(uint){
+        return multiCalls.length;
+    }
+
+    function getMultiCallsItem(uint _i) public returns(address){
+        return multiCalls[_i];
+    }
+    function putMultiCallsItem(address _address) public {
+        multiCalls.push(_address);
+    }
+
+    function clearMultiCalls() public{
+        multiCalls = new address[](0);
+    }
+
 
     /**
     * @dev Get operating status of contract
@@ -184,26 +202,6 @@ contract FlightSuretyData {
         contractBalance = contractBalance.add(_amount);
         flightPassengers[_flight].push(_passenger);
         flightInsuranceTotalAmount[_flight] = flightInsuranceTotalAmount[_flight].add(_amount);
-    }
-
-    /**
-     *  @dev Credits payouts to insurees
-    */
-    function creditInsurees(string _flight)external requireIsOperational
-    {
-        address[] memory passengers = new address[](flightPassengers[_flight].length);
-        uint index;
-        uint amount = 0;
-        passengers = flightPassengers[_flight];
-
-        for(uint i = 0; i < passengers.length; i++){
-            index = getFlightIndex(passengers[i], _flight) - 1;
-            if(insurancePassengers[passengers[i]].isPaid[index] == false){
-                insurancePassengers[passengers[i]].isPaid[index] = true;
-                amount = (insurancePassengers[passengers[i]].insurancePaid[index]).mul(15).div(10);
-                insurancePayment[passengers[i]] = insurancePayment[passengers[i]].add(amount);
-            }
-        }
     }
 
     function getPassengersInsured(string flight) external requireIsOperational returns(address[] passengers)

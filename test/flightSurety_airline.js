@@ -12,13 +12,18 @@ contract('Flight Surety Tests', async (accounts) => {
     it('(Airlines: Multiparty Consensus) Only existing airline may register a new airline until there are at least four airlines registered', async () => {
 
         // ARRANGE
+        let airline1 = accounts[1];
         let airline2 = accounts[2];
         let airline3 = accounts[3];
         let airline4 = accounts[4];
 
+        await config.flightSuretyApp.fundAirline(airline1, 10, {from: config.owner});
         await config.flightSuretyApp.registerAirline(airline2, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(airline2, 10, {from: config.owner});
         await config.flightSuretyApp.registerAirline(airline3, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(airline3, 10, {from: config.owner});
         await config.flightSuretyApp.registerAirline(airline4, {from: config.firstAirline});
+        await config.flightSuretyApp.fundAirline(airline4, 10, {from: config.owner});
 
         let register1 = await config.flightSuretyData.isAirlineRegistered.call(config.firstAirline);
         let register2 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
@@ -44,6 +49,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
         await config.flightSuretyApp.registerAirline(airline5, {from: airline3});
         await config.flightSuretyApp.registerAirline(airline5, {from: airline2});
+        await config.flightSuretyApp.fundAirline(airline5, 10, {from: config.owner});
 
         let register2 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
         let register3 = await config.flightSuretyData.isAirlineRegistered.call(airline3);
