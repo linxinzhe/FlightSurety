@@ -6,7 +6,6 @@ contract('Flight Surety Tests', async (accounts) => {
     var config;
     before('setup contract', async () => {
         config = await Test.Config(accounts);
-        // await config.flightSuretyData.authorizeCaller(config.flightSuretyApp.address);
     });
 
     it('(Airlines: Multiparty Consensus) Only existing airline may register a new airline until there are at least four airlines registered', async () => {
@@ -17,13 +16,16 @@ contract('Flight Surety Tests', async (accounts) => {
         let airline3 = accounts[3];
         let airline4 = accounts[4];
 
-        await config.flightSuretyApp.fundAirline(airline1, 10, {from: config.owner});
+        let fundAmt = 10000000000000000000; // 10 ether
+
+
+        await config.flightSuretyApp.fundAirline(airline1, {from: config.firstAirline, value: fundAmt});
         await config.flightSuretyApp.registerAirline(airline2, {from: config.firstAirline});
-        await config.flightSuretyApp.fundAirline(airline2, 10, {from: config.owner});
+        await config.flightSuretyApp.fundAirline(airline2, {from: config.firstAirline, value: fundAmt});
         await config.flightSuretyApp.registerAirline(airline3, {from: config.firstAirline});
-        await config.flightSuretyApp.fundAirline(airline3, 10, {from: config.owner});
+        await config.flightSuretyApp.fundAirline(airline3, {from: config.firstAirline, value: fundAmt});
         await config.flightSuretyApp.registerAirline(airline4, {from: config.firstAirline});
-        await config.flightSuretyApp.fundAirline(airline4, 10, {from: config.owner});
+        await config.flightSuretyApp.fundAirline(airline4, {from: config.firstAirline, value: fundAmt});
 
         let register1 = await config.flightSuretyData.isAirlineRegistered.call(config.firstAirline);
         let register2 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
@@ -47,9 +49,11 @@ contract('Flight Surety Tests', async (accounts) => {
 
         let airline5 = accounts[5];
 
+        let fundAmt = 10000000000000000000;
+
         await config.flightSuretyApp.registerAirline(airline5, {from: airline3});
         await config.flightSuretyApp.registerAirline(airline5, {from: airline2});
-        await config.flightSuretyApp.fundAirline(airline5, 10, {from: config.owner});
+        await config.flightSuretyApp.fundAirline(airline5, {from: config.firstAirline, value: fundAmt});
 
         let register2 = await config.flightSuretyData.isAirlineRegistered.call(airline2);
         let register3 = await config.flightSuretyData.isAirlineRegistered.call(airline3);
@@ -79,7 +83,7 @@ contract('Flight Surety Tests', async (accounts) => {
         let funded = await config.flightSuretyData.isAirlineFunded.call(newAirline);
 
         // ASSERT
-        assert.equal(registered === true && funded === false, true, "Airline can be registered, but does not participate in contract until it submits funding of 10 ether");
+        assert.equal(registered === true && funded === true, true, "Airline can be registered, but does not participate in contract until it submits funding of 10 ether");
 
     });
 
