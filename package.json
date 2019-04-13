@@ -5,15 +5,17 @@
   "directories": {
     "test": "test"
   },
-  "repository": "https://github.com/techbubble/flightsurety",
+  "repository": "https://github.com/linxinzhe/flightsurety",
   "license": "MIT",
   "scripts": {
     "test": "truffle test ./test/flightSurety.js",
+    "migrate":"truffle migrate",
+    "version": "truffle version",
     "dapp": "webpack-dev-server --mode development --config webpack.config.dapp.js",
     "dapp:prod": "webpack --mode production  --config webpack.config.dapp.js",
     "server": "rm -rf ./build/server && webpack --config webpack.config.server.js"
   },
-  "author": "Nik Kalyani <nik@kalyani.com> https://www.kalyani.com",
+  "author": "LIN XINZHE <linxinzhechn@qq.com> https://github.com/linxinzhe/",
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.46",
     "@babel/core": "^7.0.0-beta.46",
